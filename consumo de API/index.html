@@ -8,6 +8,7 @@
     <h4>Lista de games</h4>
     <ul id="games"></ul>
     <hr />
+
     <h4>Novo game</h4>
     <input type="text" name="title" id="title" placeholder="Título" />
     <br />
@@ -16,6 +17,18 @@
     <input type="number" name="price" id="price" placeholder="Preço" />
     <br />
     <button onclick="cadastrarGame()" type="button">Cadastrar</button>
+    <hr />
+
+    <h4>Editar game</h4>
+    <input type="text" name="idEdit" id="idEdit" placeholder="ID" readonly />
+    <br />
+    <input type="text" name="titleEdit" id="titleEdit" placeholder="Título" />
+    <br />
+    <input type="number" name="yearEdit" id="yearEdit" placeholder="Ano" />
+    <br />
+    <input type="number" name="priceEdit" id="priceEdit" placeholder="Preço" />
+    <br />
+    <button onclick="updateGame()" type="button">Editar</button>
   </head>
   <body></body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -40,7 +53,52 @@
     }
 
     function deleteGame(listItem) {
-      console.log(listItem)
+      let id = listItem.getAttribute('data-id')
+      axios
+        .delete(`http://localhost:45678/game/${id}`)
+        .then((response) => {
+          alert('Game deletado')
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+
+    function loadForm(listItem) {
+      let id = listItem.getAttribute('data-id')
+      let title = listItem.getAttribute('data-title')
+      let year = listItem.getAttribute('data-year')
+      let price = listItem.getAttribute('data-price')
+
+      document.getElementById('idEdit').value = id
+
+      document.getElementById('titleEdit').value = title
+
+      document.getElementById('yearEdit').value = year
+
+      document.getElementById('priceEdit').value = price
+    }
+
+    function updateGame() {
+      let idEdit = document.getElementById('idEdit')
+      let titleEdit = document.getElementById('titleEdit')
+      let yearEdit = document.getElementById('yearEdit')
+      let priceEdit = document.getElementById('priceEdit')
+
+      let game = {
+        title: titleEdit.value,
+        year: yearEdit.value,
+        price: priceEdit.value,
+      }
+
+      let id = idEdit.value
+
+      axios
+        .put(`http://localhost:45678/game/${id}`, game)
+        .then((response) => {
+          if (response.status === 200) alert('Game atualizado!')
+        })
+        .catch((error) => console.log(error))
     }
 
     axios
@@ -66,7 +124,14 @@
             deleteGame(item)
           })
 
+          let editBtn = document.createElement('button')
+          editBtn.innerHTML = 'Editar'
+          editBtn.addEventListener('click', () => {
+            loadForm(item)
+          })
+
           item.appendChild(deleteBtn)
+          item.appendChild(editBtn)
 
           list.appendChild(item)
         })
