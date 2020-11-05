@@ -4,14 +4,72 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Loja de Games</title>
+    <hr />
+    <h4>Lista de games</h4>
+    <ul id="games"></ul>
+    <hr />
+    <h4>Novo game</h4>
+    <input type="text" name="title" id="title" placeholder="Título" />
+    <br />
+    <input type="number" name="year" id="year" placeholder="Ano" />
+    <br />
+    <input type="number" name="price" id="price" placeholder="Preço" />
+    <br />
+    <button onclick="cadastrarGame()" type="button">Cadastrar</button>
   </head>
   <body></body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
+    function cadastrarGame() {
+      let titleInput = document.getElementById('title')
+      let yearInput = document.getElementById('year')
+      let priceInput = document.getElementById('price')
+
+      let game = {
+        title: titleInput.value,
+        year: yearInput.value,
+        price: priceInput.value,
+      }
+
+      axios
+        .post('http://localhost:45678/game', game)
+        .then((response) => {
+          if (response.status === 200) alert('Game cadastrado!')
+        })
+        .catch((error) => console.log(error))
+    }
+
+    function deleteGame(listItem) {
+      console.log(listItem)
+    }
+
     axios
       .get('http://localhost:45678/games')
       .then((response) => {
-        console.log(response)
+        let games = response.data
+        let list = document.getElementById('games')
+
+        games.forEach((game) => {
+          let item = document.createElement('li')
+
+          item.setAttribute('data-id', game.id)
+          item.setAttribute('data-title', game.title)
+          item.setAttribute('data-year', game.year)
+          item.setAttribute('data-price', game.price)
+
+          item.innerHTML =
+            game.id + ' - ' + game.title + ' - $' + game.price + '  '
+
+          let deleteBtn = document.createElement('button')
+          deleteBtn.innerHTML = 'Deletar'
+          deleteBtn.addEventListener('click', function () {
+            deleteGame(item)
+          })
+
+          item.appendChild(deleteBtn)
+
+          list.appendChild(item)
+        })
       })
       .catch((error) => console.log(error))
   </script>
