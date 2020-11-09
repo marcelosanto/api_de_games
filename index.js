@@ -29,6 +29,20 @@ let DB = {
       price: 20,
     },
   ],
+  users: [
+    {
+      id: 1,
+      name: 'Marcelo Santos',
+      email: 'mama@rocha.com',
+      password: 'mamajs',
+    },
+    {
+      id: 10,
+      name: 'Alice Santos',
+      email: 'lili2020@rocha.com',
+      password: 'lili2020js',
+    },
+  ],
 }
 
 app.get('/games', (req, res) => {
@@ -108,5 +122,29 @@ app.put('/game/:id', (req, res) => {
     }
   }
 })
+
+app.post('/auth', (req, res) => {
+  let { email, password } = req.body
+
+  if(email != undefined){
+    let user = DB.users.find(u => e.email == email)
+
+    if (user != undefined){
+      if(user.password == paword) {} else {
+        res.status = 200
+      res.json({err: 'Token falso'})
+      } else {
+        res.status = 401
+      res.json({err: 'Credenciais inválidas'})
+      }
+    } else {
+      res.status = 400
+      res.json({err: 'O E-mail enviado não existe na base de dados!!!'})
+    }
+  } else {
+    res.status = 400
+    res.json({err: 'O E-mail enviado é ínvalido'})
+  }
+}
 
 app.listen(45678, () => console.log('API RODANDO'))
