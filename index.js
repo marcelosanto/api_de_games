@@ -2,9 +2,11 @@ const express = require('express')
 const app = express()
 const bodyParse = require('body-parser')
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
+
+const jwtSecret = 'okdaoadsij83u3004954ujirjgjddszf'
 
 app.use(cors())
-
 app.use(bodyParse.urlencoded({ extended: false }))
 app.use(bodyParse.json())
 
@@ -131,18 +133,20 @@ app.post('/auth', (req, res) => {
 
     if (user != undefined) {
       if (user.password == password) {
-        res.status = 200
+        jwt.sign({ id: user.id, email: user.email }, jwtSecret)
+
+        res.status(200)
         res.json({ err: 'Token falso' })
       } else {
-        res.status = 401
+        res.status(401)
         res.json({ err: 'Credenciais inválidas' })
       }
     } else {
-      res.status = 404
+      res.status(404)
       res.json({ err: 'O E-mail enviado não existe na base de dados!!!' })
     }
   } else {
-    res.status = 400
+    res.status(400)
     res.json({ err: 'O E-mail enviado é ínvalido' })
   }
 })
